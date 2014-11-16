@@ -3,6 +3,8 @@ class CatarseWepay::WepayController < ApplicationController
   SCOPE = "projects.contributions.checkout"
   layout :false
 
+  require 'wepay'
+
   def review
   end
 
@@ -54,7 +56,25 @@ class CatarseWepay::WepayController < ApplicationController
     return render status: 500, text: e.inspect
   end
 
-  def pay
+# Create new preapproval call
+ def new
+    response = gateway.call('/preapproval/create', PaymentEngines.configuration[:wepay_access_token], {
+        #account_id: will have to be changed to the WePay account ID of the project creators
+        :account_id         => PaymentEngines.configuration[:wepay_account_id],
+        :amount             => (contribution.price_in_cents/100).round(2).to_s,
+        :period             => 'once',
+        :short_description  => t('wepay_description', scope: SCOPE, :project_name => contribution.project.name, :value => contribution.display_value),
+        :type               => 'regular',
+        :redirect_uri       => success_wepay_url(id: contribution.id),
+        :callback_uri       => ipn_wepay_index_url(callback_uri_params)
+    })
+
+    p response
+
+ end
+
+# Checkout will eventually have to be put in a rake task that will run daily, and will batch.
+ def pay
     response = gateway.call('/checkout/create', PaymentEngines.configuration[:wepay_access_token], {
         account_id: PaymentEngines.configuration[:wepay_account_id],
         amount: (contribution.price_in_cents/100).round(2).to_s,
@@ -101,5 +121,7 @@ class CatarseWepay::WepayController < ApplicationController
     raise "[WePay] An API Client ID and Client Secret are required to make requests to WePay" unless PaymentEngines.configuration[:wepay_client_id] and PaymentEngines.configuration[:wepay_client_secret]
     @gateway ||= WePay.new(PaymentEngines.configuration[:wepay_client_id], PaymentEngines.configuration[:wepay_client_secret])
   end
+
+  def
 
 end
