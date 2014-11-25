@@ -1,6 +1,5 @@
 require 'digest/sha2'
-module WepayRails
-  module Api
+module CatarseWepay
     module PreapprovalMethods
       # Many of the settings you pass in here are already factored in from
       # the wepay.yml file and only need to be overridden if you insist on doing
