@@ -4,3 +4,4 @@ gemspec
 
 gem 'pg'
 gem 'slim-rails'
+gem 'wepay'

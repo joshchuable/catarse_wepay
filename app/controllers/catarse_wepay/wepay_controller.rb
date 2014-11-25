@@ -55,21 +55,49 @@ class CatarseWepay::WepayController < ApplicationController
   end
 
   def pay
-    response = gateway.call('/checkout/create', PaymentEngines.configuration[:wepay_access_token], {
-        account_id: PaymentEngines.configuration[:wepay_account_id],
-        amount: (contribution.price_in_cents/100).round(2).to_s,
-        short_description: t('wepay_description', scope: SCOPE, :project_name => contribution.project.name, :value => contribution.display_value),
-        type: 'DONATION',
-        redirect_uri: success_wepay_url(id: contribution.id),
-        callback_uri: ipn_wepay_index_url(callback_uri_params)
+    # WePay Ruby SDK - http://git.io/a_c2uQ
+    require 'wepay'
+
+    # set _use_stage to false for live environments
+    wepay = WePay.new(PaymentEngines.configuration[:wepay_client_id], PaymentEngines.configuration[:wepay_client_secret], _use_stage = true)
+
+    # create the pre-approval
+    response = wepay.call('/preapproval/create', PaymentEngines.configuration[:wepay_access_token], {
+        :account_id         => PaymentEngines.configuration[:wepay_account_id],
+        :period             => 'once',
+        :amount             => (contribution.price_in_cents/100).round(2).to_s,
+        :mode               => 'regular',
+        :short_description  => t('wepay_description', scope: SCOPE, :project_name => contribution.project.name, :value => contribution.display_value),
+        :callback_uri       => ipn_wepay_index_url(callback_uri_params)
+        :redirect_uri       => success_wepay_url(id: contribution.id),
     })
-    if response['checkout_uri']
-      contribution.update_attributes payment_method: 'WePay', payment_token: response['checkout_id']
-      redirect_to response['checkout_uri']
+
+    # display the response
+    p response
+    flash[:success] = t(response)
+    if response['preapproval_id']
+      contribution.update_attributes payment_method: 'WePay', payment_token: response['preapproval_id']
+      redirect_to response['preapproval_uri']
     else
       flash[:failure] = t('wepay_error', scope: SCOPE)
       return redirect_to main_app.edit_project_contribution_path(project_id: contribution.project.id, id: contribution.id)
     end
+
+    # response = gateway.call('/checkout/create', PaymentEngines.configuration[:wepay_access_token], {
+    #     account_id: PaymentEngines.configuration[:wepay_account_id],
+    #     amount: (contribution.price_in_cents/100).round(2).to_s,
+    #     short_description: t('wepay_description', scope: SCOPE, :project_name => contribution.project.name, :value => contribution.display_value),
+    #     type: 'DONATION',
+    #     redirect_uri: success_wepay_url(id: contribution.id),
+    #     callback_uri: ipn_wepay_index_url(callback_uri_params)
+    # })
+    # if response['checkout_uri']
+    #   contribution.update_attributes payment_method: 'WePay', payment_token: response['checkout_id']
+    #   redirect_to response['checkout_uri']
+    # else
+    #   flash[:failure] = t('wepay_error', scope: SCOPE)
+    #   return redirect_to main_app.edit_project_contribution_path(project_id: contribution.project.id, id: contribution.id)
+    # end
   end
 
   def callback_uri_params
