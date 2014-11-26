@@ -81,25 +81,25 @@ class CatarseWepay::WepayController < ApplicationController
     # set _use_stage to false for live environments
     # wepay = WePay.new(PaymentEngines.configuration[:wepay_client_id], PaymentEngines.configuration[:wepay_client_secret], _use_stage = true)
 
-    # # create the pre-approval
-    # response = wepay.call('/preapproval/create', PaymentEngines.configuration[:wepay_access_token], {
-    #     :account_id         => PaymentEngines.configuration[:wepay_account_id],
-    #     :period             => 'once',
-    #     :amount             => (contribution.price_in_cents/100).round(2).to_s,
-    #     :mode               => 'regular',
-    #     :short_description  => t('wepay_description', scope: SCOPE, :project_name => contribution.project.name, :value => contribution.display_value),
-    #     :callback_uri       => ipn_wepay_index_url(callback_uri_params)
-    #     :redirect_uri       => success_wepay_url(id: contribution.id)
-    #   })
+     # create the pre-approval
+     response = wepay.call('/preapproval/create', PaymentEngines.configuration[:wepay_access_token], {
+         :account_id         => PaymentEngines.configuration[:wepay_account_id],
+         :period             => 'once',
+         :amount             => (contribution.price_in_cents/100).round(2).to_s,
+         :mode               => 'regular',
+         :short_description  => t('wepay_description', scope: SCOPE, :project_name => contribution.project.name, :value => contribution.display_value),
+         :callback_uri       => ipn_wepay_index_url(callback_uri_params)
+         :redirect_uri       => success_wepay_url(id: contribution.id)
+       })
 
-    response = gateway.call('/checkout/create', PaymentEngines.configuration[:wepay_access_token], {
-        account_id: PaymentEngines.configuration[:wepay_account_id],
-        amount: (contribution.price_in_cents/100).round(2).to_s,
-        short_description: t('wepay_description', scope: SCOPE, :project_name => contribution.project.name, :value => contribution.display_value),
-        type: 'DONATION',
-        redirect_uri: success_wepay_url(id: contribution.id),
-        callback_uri: ipn_wepay_index_url(callback_uri_params)
-    })
+    #response = gateway.call('/checkout/create', PaymentEngines.configuration[:wepay_access_token], {
+    #    account_id: PaymentEngines.configuration[:wepay_account_id],
+    #    amount: (contribution.price_in_cents/100).round(2).to_s,
+    #    short_description: t('wepay_description', scope: SCOPE, :project_name => contribution.project.name, :value => contribution.display_value),
+    #    type: 'DONATION',
+    #    redirect_uri: success_wepay_url(id: contribution.id),
+    #    callback_uri: ipn_wepay_index_url(callback_uri_params)
+    #})
 
     # display the response
     p response
