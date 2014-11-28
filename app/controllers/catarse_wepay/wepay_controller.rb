@@ -83,7 +83,7 @@ class CatarseWepay::WepayController < ApplicationController
 
      # create the pre-approval
      response = gateway.call('/preapproval/create', PaymentEngines.configuration[:wepay_access_token], {
-         :account_id         => PaymentEngines.configuration[:wepay_account_id],
+         :account_id         => PaymentEngines.configuration[:wepay_account_id_string],
          :period             => 'once',
          :amount             => (contribution.price_in_cents/100).round(2).to_s,
          :mode               => 'regular',
