@@ -32,9 +32,9 @@ class CatarseWepay::WepayController < ApplicationController
       PaymentEngines.create_payment_notification contribution_id: contribution.id, extra_data: response
       if response["state"]
         case response["state"].downcase
-        when 'captured'
+        when 'new'
           contribution.confirm!
-        when 'refunded'
+        when 'stopped'
           contribution.refund!
         when 'cancelled'
           contribution.cancel!
@@ -60,7 +60,7 @@ class CatarseWepay::WepayController < ApplicationController
  def new
     response = gateway.call('/preapproval/create', PaymentEngines.configuration[:wepay_access_token], {
         #account_id: will have to be changed to the WePay account ID of the project creators
-        :account_id         => PaymentEngines.configuration[:wepay_account_id],
+        :account_id         => self.wepay_account_id_string,
         :amount             => (contribution.price_in_cents/100).round(2).to_s,
         :period             => 'once',
         :short_description  => t('wepay_description', scope: SCOPE, :project_name => contribution.project.name, :value => contribution.display_value),
@@ -83,7 +83,7 @@ class CatarseWepay::WepayController < ApplicationController
 
      # create the pre-approval
      response = gateway.call('/preapproval/create', PaymentEngines.configuration[:wepay_access_token], {
-         :account_id         => PaymentEngines.configuration[:wepay_account_id],
+         :account_id         => self.wepay_account_id_string,
          :period             => 'once',
          :amount             => (contribution.price_in_cents/100).round(2).to_s,
          :mode               => 'regular',
