@@ -63,7 +63,6 @@ class CatarseWepay::WepayController < ApplicationController
         :account_id         => contribution.project.user.wepay_account_id_string,
         :amount             => (contribution.price_in_cents/100).round(2).to_s,
         :period             => 'once',
-        :app_fee            => 0.04
         :short_description  => t('wepay_description', scope: SCOPE, :project_name => contribution.project.name, :value => contribution.display_value),
         :type               => 'regular',
         :redirect_uri       => success_wepay_url(id: contribution.id),
