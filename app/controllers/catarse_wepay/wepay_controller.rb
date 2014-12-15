@@ -134,7 +134,7 @@ class CatarseWepay::WepayController < ApplicationController
   end
 
   def success
-    response = gateway.call('/preapproval', PaymentEngines.configuration[:wepay_access_token], {
+    response = gateway.call('/preapproval', contribution.project.user.wepay_access_token, {
         preapproval_id: contribution.payment_token,
     })
     if response['state'] == 'approved'
