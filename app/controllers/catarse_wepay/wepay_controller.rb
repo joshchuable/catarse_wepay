@@ -58,7 +58,7 @@ class CatarseWepay::WepayController < ApplicationController
 
 # Create new preapproval call
  def new
-    response = gateway.call('/preapproval/create', PaymentEngines.configuration[:wepay_access_token], {
+    response = gateway.call('/preapproval/create', contribution.project.user.wepay_access_token, {
         #account_id: will have to be changed to the WePay account ID of the project creators
         :account_id         => contribution.project.user.wepay_account_id_string,
         :amount             => (contribution.price_in_cents/100).round(2).to_s,
@@ -82,7 +82,7 @@ class CatarseWepay::WepayController < ApplicationController
     # wepay = WePay.new(PaymentEngines.configuration[:wepay_client_id], PaymentEngines.configuration[:wepay_client_secret], _use_stage = true)
 
      # create the pre-approval
-     response = gateway.call('/preapproval/create', PaymentEngines.configuration[:wepay_access_token], {
+     response = gateway.call('/preapproval/create', contribution.project.user.wepay_access_token, {
          :account_id         => contribution.project.user.wepay_account_id_string,
          :period             => 'once',
          :amount             => (contribution.price_in_cents/100).round(2).to_s,
