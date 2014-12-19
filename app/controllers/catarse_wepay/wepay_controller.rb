@@ -80,7 +80,7 @@ class CatarseWepay::WepayController < ApplicationController
     require 'wepay'
 
     # set _use_stage to false for live environments
-    # wepay = WePay.new(PaymentEngines.configuration[:wepay_client_id], PaymentEngines.configuration[:wepay_client_secret], _use_stage = true)
+     wepay = WePay.new(PaymentEngines.configuration[:wepay_client_id], PaymentEngines.configuration[:wepay_client_secret], _use_stage = true)
 
      # create the pre-approval
      response = gateway.call('/preapproval/create', contribution.project.user.wepay_access_token, {
