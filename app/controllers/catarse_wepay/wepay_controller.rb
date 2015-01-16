@@ -132,7 +132,10 @@ class CatarseWepay::WepayController < ApplicationController
   end
 
   def callback_uri_params
-    {host: '52966c09.ngrok.com', port: 80} if Rails.env.development?
+    #{host: '52966c09.ngrok.com', port: 80} if Rails.env.development? #original
+    #{host: 'funddit.me', port: 80} if Rails.env.production? #we could could combine this with the line above for testing purposes
+    #{} #it's possible that these are to be used as overwriting and that an empty object will use the defaults. I think it's likely that this is the case.
+    {host: 'funddit.me', port: 80} #It seems like this is a pretty safe bet for now, but I'm not positive
   end
 
   def success
