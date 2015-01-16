@@ -80,7 +80,7 @@ class CatarseWepay::WepayController < ApplicationController
     require 'wepay'
 
     # set _use_stage to false for live environments
-    # wepay = WePay.new(PaymentEngines.configuration[:wepay_client_id], PaymentEngines.configuration[:wepay_client_secret], _use_stage = true)
+     #wepay = WePay.new(PaymentEngines.configuration[:wepay_client_id], PaymentEngines.configuration[:wepay_client_secret], _use_stage = true)
 
      # create the pre-approval
      response = gateway.call('/preapproval/create', contribution.project.user.wepay_access_token, {
@@ -161,7 +161,7 @@ class CatarseWepay::WepayController < ApplicationController
 
   def gateway
     raise "[WePay] An API Client ID and Client Secret are required to make requests to WePay" unless PaymentEngines.configuration[:wepay_client_id] and PaymentEngines.configuration[:wepay_client_secret]
-    @gateway ||= WePay.new(PaymentEngines.configuration[:wepay_client_id], PaymentEngines.configuration[:wepay_client_secret])
+    @gateway ||= WePay.new(PaymentEngines.configuration[:wepay_client_id], PaymentEngines.configuration[:wepay_client_secret], false)
   end
 
 end
