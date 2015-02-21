@@ -26,7 +26,7 @@ class CatarseWepay::WepayController < ApplicationController
 
   def ipn
     if contribution && (contribution.payment_method == 'WePay' || contribution.payment_method.nil?)
-      response = gateway.call('/checkout', PaymentEngines.configuration[:wepay_access_token], {
+      response = gateway.call('/checkout', contribution.project.user.wepay_access_token, {
           checkout_id: contribution.payment_token,
       })
       PaymentEngines.create_payment_notification contribution_id: contribution.id, extra_data: response
@@ -114,7 +114,7 @@ class CatarseWepay::WepayController < ApplicationController
     response = gateway.call('/checkout', contribution.project.user.wepay_access_token, {
         checkout_id: contribution.payment_token,
     })
-    if response['state'] == 'approved'
+    if response['state'] == 'authorized'
       flash[:success] = t('success', scope: SCOPE)
       redirect_to main_app.project_contribution_path(project_id: contribution.project.id, id: contribution.id)
     else
