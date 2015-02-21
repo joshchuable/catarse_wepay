@@ -86,6 +86,7 @@ class CatarseWepay::WepayController < ApplicationController
          :app_fee            => (0.04 * contribution.price_in_cents/100).round(2),
          :amount             => (contribution.price_in_cents/100).round(2).to_s,
          :mode               => 'regular',
+         :type               => 'DONATION',
          :short_description  => t('wepay_description', scope: SCOPE, :project_name => contribution.project.name, :value => contribution.display_value),
          :callback_uri       => ipn_wepay_index_url(callback_uri_params),
          :redirect_uri       => success_wepay_url(id: contribution.id)
