@@ -79,9 +79,6 @@ class CatarseWepay::WepayController < ApplicationController
     # WePay Ruby SDK - http://git.io/a_c2uQ
     require 'wepay'
 
-   
-  
-
      # create the checkout 
      response = gateway.call('/checkout/create', contribution.project.user.wepay_access_token, {
          :account_id         => contribution.project.user.wepay_account_id_string,
@@ -95,14 +92,6 @@ class CatarseWepay::WepayController < ApplicationController
        })
 
 
-
-
-
-
-
-
-
-
     # display the response
     p response
     flash[:success] = t(response)
@@ -113,22 +102,6 @@ class CatarseWepay::WepayController < ApplicationController
       flash[:failure] = t('wepay_error', scope: SCOPE)
       return redirect_to main_app.edit_project_contribution_path(project_id: contribution.project.id, id: contribution.id)
     end
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   end
 
   def callback_uri_params
