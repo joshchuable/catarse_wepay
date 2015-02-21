@@ -127,7 +127,7 @@ class CatarseWepay::WepayController < ApplicationController
   def contribution
     @contribution ||= if params['id']
                   PaymentEngines.find_payment(id: params['id'])
-                elsif params['preapproval_id']
+                elsif params['checkout_id']
                   PaymentEngines.find_payment(payment_token: params['checkout_id'])
                 end
   end
